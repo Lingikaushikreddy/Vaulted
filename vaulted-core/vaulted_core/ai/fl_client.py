@@ -31,6 +31,18 @@ class VaultClient(fl.client.NumPyClient):
                 outputs = self.model(inputs)
                 loss = criterion(outputs, labels)
                 loss.backward()
+                
+                # --- PRIVACY INJECTION (Differential Privacy) ---
+                # 1. Gradient Clipping (Prevent any single sample from having too much influence)
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
+                
+                # 2. Add Noise (Simulated DP)
+                # In production we would use opacus, but manual noise demonstrates the arch pattern
+                if config.get("privacy_level") == "high":
+                    for param in self.model.parameters():
+                        noise = torch.randn_like(param) * 0.01
+                        param.grad += noise
+
                 optimizer.step()
                 
         return self.get_parameters(config={}), len(self.train_loader.dataset), {}

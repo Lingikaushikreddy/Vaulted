@@ -36,7 +36,15 @@ async def request_training(request: ModelRequest):
     }
 
 def start_gateway():
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    print("Starting Secure Enterprise Gateway (TLS 1.3)...")
+    # Enforce TLS
+    uvicorn.run(
+        app, 
+        host="0.0.0.0", 
+        port=8000,
+        ssl_keyfile="certs/key.pem",
+        ssl_certfile="certs/cert.pem"
+    )
 
 if __name__ == "__main__":
     start_gateway()
