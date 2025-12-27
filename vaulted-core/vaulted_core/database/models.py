@@ -18,24 +18,30 @@ class StoredDocument(Base):
     # Metadata extracted from the file (JSON string)
     meta_info = Column(Text, default="{}") 
 
-class AccessLog(Base):
-    """Logs every access to the vault."""
-    __tablename__ = "access_logs"
+class AuditLog(Base):
+    """Logs every access to the vault (Immutable Ledger)."""
+    __tablename__ = "audit_records"
 
     id = Column(Integer, primary_key=True, index=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
-    actor_id = Column(String) # Who accessed it (User user_id or FL Server ID)
-    action = Column(String) # READ, WRITE, TRAIN
-    resource_id = Column(Integer) # ID of the StoredDocument (if applicable)
-    status = Column(String) # SUCCESS, DENIED
+    actor_id = Column(String)       # Who requested it?
+    action_type = Column(String)    # LOGIN, TRAIN_REQUEST, DATA_INGEST
+    target_resource = Column(String)# File hash or Job ID
+    verdict = Column(String)        # ALLOWED / DENIED
+    policy_id = Column(Integer, nullable=True) # Which consent policy justified this?
+    
+    # Extra details (JSON)
+    details = Column(Text, default="{}")
 
 class ConsentPolicy(Base):
     """Defines rules for data usage."""
     __tablename__ = "consent_policies"
 
     id = Column(Integer, primary_key=True, index=True)
+    entity_id = Column(String)      # e.g., "did:web:healthcorp.com" or "user_me"
     name = Column(String)
     description = Column(String)
-    allowed_actions = Column(String) # e.g., "TRAIN, READ_METADATA" - Comma separated for MVP
-    target_data_tags = Column(String) # e.g., "health, finance" (applies to docs with these tags)
+    allowed_actions = Column(String) # e.g., "TRAIN_MODEL", "STATISTICS"
+    target_tags = Column(String)    # e.g., "health, finance"
+    expiry = Column(DateTime, nullable=True)
     revoked = Column(Boolean, default=False)
