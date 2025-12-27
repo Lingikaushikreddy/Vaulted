@@ -11,7 +11,14 @@ async def test_vault_flow():
     
     # 1. Setup paths
     base_path = Path("test_data")
+    import shutil
+    if base_path.exists():
+        shutil.rmtree(base_path)
     base_path.mkdir(exist_ok=True)
+    
+    # Cleanup DB if exists
+    if os.path.exists("vault.db"):
+        os.remove("vault.db")
     
     input_file = base_path / "secret.txt"
     input_file.write_text("This is my highly sensitive medical record.")
