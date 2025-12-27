@@ -12,6 +12,29 @@
 
 The system is composed of three main layers. For a deep dive, see the [Architecture Design Document](docs/architecture.md).
 
+```mermaid
+graph TD
+    subgraph "Trust Zone: User Device (The Vault)"
+        A[Raw Data Store] -->|Read w/ Local Key| B(Local Trainer)
+        K[Key Manager] -.->|Injects Keys| B
+        B -->|Gradients/Weights| C{Privacy Barrier}
+    end
+
+    subgraph "Trust Zone: Untrusted Network"
+        C -->|Encrypted Update| D[FL Orchestrator]
+        D -->|Global Model| B
+    end
+
+    subgraph "Trust Zone: Enterprise/Analyst"
+        E[Data Scientist] -->|Training Request| F[API Gateway]
+        F -->|Job Spec| D
+    end
+
+    style A fill:#bfb,stroke:#333,stroke-width:2px
+    style B fill:#bfb,stroke:#333,stroke-width:2px
+    style D fill:#fbb,stroke:#f33,stroke-width:2px,stroke-dasharray: 5 5
+```
+
 1.  **Vault Core (`vaulted-core`)**: 
     - A secure, local daemon running on the user's device.
     - Manages **AES-256** encrypted file storage.
