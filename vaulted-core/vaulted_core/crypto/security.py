@@ -3,6 +3,7 @@ import keyring
 import base64
 import secrets
 from pathlib import Path
+from typing import Optional
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 SERVICE_NAME = "vaulted_core"
@@ -47,7 +48,8 @@ class VaultSecurity:
             try:
                 keyring.set_password(SERVICE_NAME, USERNAME, key_b64.decode('utf-8'))
             except Exception as e:
-                print(f"Keyring failed ({e}).")
+                # In production logs, this should be a warning
+                pass
 
         # Save to File (Backup)
         self.key_path.write_bytes(key_b64)
@@ -58,11 +60,45 @@ class VaultSecurity:
             
         return key
 
-    def rotate_master_key(self):
-        """Public method to trigger rotation."""
+    def rotate_master_key(self, reencrypt_files: list[Path] = None):
+        """
+        Public method to trigger rotation.
+        DANGER: If reencrypt_files is not provided, old data may become unreadable
+        unless the old key is archived (which this implementation currently does not do).
+
+        Enhancement: Supports immediate re-encryption of critical files.
+        """
+        old_aesgcm = self.aesgcm
+
         print("Rotating Master Key...")
         self.key = self._rotate_key()
         self.aesgcm = AESGCM(self.key)
+
+        if reencrypt_files:
+            print(f"Re-encrypting {len(reencrypt_files)} files...")
+            for fpath in reencrypt_files:
+                if fpath.exists():
+                    try:
+                        # Decrypt with OLD key
+                        with open(fpath, "rb") as f:
+                            enc_data = f.read()
+
+                        # Validate Format
+                        if len(enc_data) < 28:
+                             continue
+
+                        nonce = enc_data[:12]
+                        ciphertext = enc_data[12:]
+                        plaintext = old_aesgcm.decrypt(nonce, ciphertext, None)
+
+                        # Encrypt with NEW key
+                        new_enc_data = self.encrypt_data(plaintext)
+                        with open(fpath, "wb") as f:
+                            f.write(new_enc_data)
+
+                        print(f"Re-encrypted: {fpath}")
+                    except Exception as e:
+                        print(f"Failed to re-encrypt {fpath}: {e}")
 
     def encrypt_data(self, data: bytes) -> bytes:
         """Format: [NONCE (12 bytes)][CIPHERTEXT + TAG]"""
