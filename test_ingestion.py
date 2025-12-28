@@ -2,10 +2,10 @@ import asyncio
 import os
 import json
 from pathlib import Path
-from vaulted_core.database.connection import init_db, get_db
-from vaulted_core.database.models import StoredDocument
-from vaulted_core.crypto.security import VaultSecurity
-from vaulted_core.ingestion.handlers import IngestionManager
+from aegis_core.database.connection import init_db, get_db
+from aegis_core.database.models import StoredDocument
+from aegis_core.crypto.security import AegisSecurity
+from aegis_core.ingestion.handlers import IngestionManager
 
 async def test_ingestion_flow():
     print("--- Starting Ingestion Integration Test ---")
@@ -31,7 +31,7 @@ async def test_ingestion_flow():
     # Architecture says: Store raw data encrypted. 
     # We might verify extraction for indexing, but store the file.)
     print("Encrypting Original File...")
-    security = VaultSecurity(key_path="test_vault.key")
+    security = AegisSecurity(key_path="test_aegis.key")
     security.encrypt_file(csv_file, encrypted_file)
     
     # 4. Store Metadata + Extracted Info

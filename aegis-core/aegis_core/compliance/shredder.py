@@ -9,7 +9,7 @@ class KeyShredder:
     """
     
     @staticmethod
-    def shred_master_key(key_path: str = "vault_key.key"):
+    def shred_master_key(key_path: str = "aegis_key.key"):
         print("!!! INITIATING CRYPTO-SHREDDING SEQUENCE !!!")
         
         # 1. Shred File Key (if exists)

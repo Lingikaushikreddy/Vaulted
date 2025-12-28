@@ -5,7 +5,7 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 class StoredDocument(Base):
-    """Represents a file stored in the vault."""
+    """Represents a file stored in the aegis."""
     __tablename__ = "stored_documents"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -19,7 +19,7 @@ class StoredDocument(Base):
     meta_info = Column(Text, default="{}") 
 
 class AuditLog(Base):
-    """Logs every access to the vault (Immutable Ledger)."""
+    """Logs every access to the aegis (Immutable Ledger)."""
     __tablename__ = "audit_records"
 
     id = Column(Integer, primary_key=True, index=True)

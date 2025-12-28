@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import uvicorn
 import asyncio
 
-app = FastAPI(title="Vaulted Enterprise Gateway")
+app = FastAPI(title="Aegis Enterprise Gateway")
 
 class ModelRequest(BaseModel):
     client_id: str
@@ -12,7 +12,7 @@ class ModelRequest(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"status": "online", "system": "VAULTED Gateway"}
+    return {"status": "online", "system": "AEGIS Gateway"}
 
 @app.post("/request-training")
 async def request_training(request: ModelRequest):

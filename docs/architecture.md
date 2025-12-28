@@ -1,4 +1,4 @@
-# VAULTED - System Architecture Document (SAD)
+# AEGIS - System Architecture Document (SAD)
 
 **Role**: Senior Principal Systems Architect
 **Date**: 2025-12-27
@@ -7,7 +7,7 @@
 ---
 
 ## 1. Executive Summary
-VAULTED is a **decentralized data trust infrastructure** designed to enable high-utility AI training without compromising user privacy. It operates on a **"Compute-to-Data"** paradigm where raw data never leaves the user's secure vault. The architecture prioritizes **Zero Trust** principles, assuming that the network and even the orchestration server can be untrusted entities regarding raw data access.
+AEGIS is a **decentralized data trust infrastructure** designed to enable high-utility AI training without compromising user privacy. It operates on a **"Compute-to-Data"** paradigm where raw data never leaves the user's secure aegis. The architecture prioritizes **Zero Trust** principles, assuming that the network and even the orchestration server can be untrusted entities regarding raw data access.
 
 ## 2. Trust Model & Zero Trust Boundaries
 
@@ -20,7 +20,7 @@ VAULTED is a **decentralized data trust infrastructure** designed to enable high
 ### 2.2 Trust Boundaries Diagram
 ```mermaid
 graph TD
-    subgraph "Trust Zone: User Device (The Vault)"
+    subgraph "Trust Zone: User Device (The Aegis)"
         A[Raw Data Store] -->|Read w/ Local Key| B(Local Trainer)
         K[Key Manager] -.->|Injects Keys| B
         B -->|Gradients/Weights| C{Privacy Barrier}
@@ -46,8 +46,8 @@ graph TD
 ### 3.1 Data Flow: The Training Cycle
 1.  **Request**: Enterprise sends `JobSpec` (Model Architecture + Hyperparams + Target Cohort) to `API Gateway`.
 2.  **Consent Check**: Gateway verifies `JobSpec` against `ConsentRegistry` (Blockchain/Ledger).
-3.  **Dispatch**: `FL Orchestrator` broadcasts `JobSpec` to eligible `Vault Clients`.
-4.  **Verification**: `Vault Client` verifies cryptographic signature of the `JobSpec`.
+3.  **Dispatch**: `FL Orchestrator` broadcasts `JobSpec` to eligible `Aegis Clients`.
+4.  **Verification**: `Aegis Client` verifies cryptographic signature of the `JobSpec`.
 5.  **Local Compute**:
     *   Decrypt local data into memory (RAM only).
     *   Run forward/backward pass.
@@ -59,7 +59,7 @@ graph TD
 
 ### 3.2 Component Contracts
 
-#### A. The Vault (Client)
+#### A. The Aegis (Client)
 *   **Responsibility**: Data Custody, Local Compute.
 *   **Interface**: `gRPC` (Flower Client).
 *   **Storage Schema**:
@@ -101,6 +101,6 @@ graph TD
 *   **Tradeoff**: GCM offers integrity but is slower than CTR. Integrity is non-negotiable here.
 
 ## 6. Next Steps (Roadmap)
-1.  **Harden the Vault**: Replace static keys with OS Keychain integration.
+1.  **Harden the Aegis**: Replace static keys with OS Keychain integration.
 2.  **Data Ingestion Engine**: Build "Connectors" (e.g., PDF parser, CSV importer) to turn raw files into training tensors.
 3.  **Secure Aggregation**: Upgrade the FL loop to use Flower's SecAgg protocols.

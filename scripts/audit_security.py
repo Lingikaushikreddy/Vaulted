@@ -28,10 +28,10 @@ def check_tls_config(cert_path: Path):
         print(f"[FAIL] Could not read TLS Cert: {e}")
 
 def main():
-    print("=== VAULTED Security Audit ===")
+    print("=== AEGIS Security Audit ===")
 
     # 1. Check Key Permissions
-    key_file = Path("vault_key.key")
+    key_file = Path("aegis_key.key")
     if key_file.exists():
         check_permissions(key_file, "600")
     else:

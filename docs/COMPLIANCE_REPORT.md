@@ -1,11 +1,11 @@
-# VAULTED Security Compliance Report
+# AEGIS Security Compliance Report
 
 **Date**: [DATE]
 **Auditor**: [NAME]
 **Version**: 1.0
 
 ## Executive Summary
-This report summarizes the security posture of the VAULTED deployment.
+This report summarizes the security posture of the AEGIS deployment.
 
 ## Checklist
 

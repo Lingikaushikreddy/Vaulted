@@ -1,4 +1,4 @@
-# VAULTED TEE Integration Roadmap
+# AEGIS TEE Integration Roadmap
 
 ## Overview
 This document outlines the strategy for migrating the Aggregation Server to a Trusted Execution Environment (TEE) to mitigate Threat T1 (Malicious Aggregation Server).
@@ -10,11 +10,11 @@ This document outlines the strategy for migrating the Aggregation Server to a Tr
 ## Integration Steps
 
 ### Phase 1: Containerization (Current)
-*   Ensure `vaulted-server` runs cleanly in a Docker container.
+*   Ensure `aegis-server` runs cleanly in a Docker container.
 *   Minimize dependencies to reduce the Trusted Computing Base (TCB).
 
 ### Phase 2: Gramine Manifest
-*   Create `vaulted-server.manifest.template`.
+*   Create `aegis-server.manifest.template`.
 *   Define allowed files (certs, python scripts) and network sockets.
 *   **Goal**: Run the Python server inside Gramine-SGX.
 

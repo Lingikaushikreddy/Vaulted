@@ -1,6 +1,6 @@
 # GDPR / Regulatory Mapping
 
-This document outlines how the VAULTED system's technical controls map to regulatory requirements (GDPR, CCPA, HIPAA).
+This document outlines how the AEGIS system's technical controls map to regulatory requirements (GDPR, CCPA, HIPAA).
 
 ## GDPR Mapping
 
@@ -14,7 +14,7 @@ This document outlines how the VAULTED system's technical controls map to regula
 ### Article 17: Right to Erasure ('Right to be Forgotten')
 * **Requirement**: The data subject has the right to obtain from the controller the erasure of personal data.
 * **Implementation**:
-    * `KeyShredder` class in `vaulted_core/compliance/shredder.py` implements crypto-shredding.
+    * `KeyShredder` class in `aegis_core/compliance/shredder.py` implements crypto-shredding.
     * By destroying the encryption key, data becomes mathematically inaccessible, effectively erasing it.
 
 ### Article 25: Data Protection by Design and by Default

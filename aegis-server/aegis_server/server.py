@@ -2,7 +2,7 @@ import flwr as fl
 from pathlib import Path
 
 def start_fl_server():
-    print("Starting Vaulted FL Server...")
+    print("Starting Aegis FL Server...")
 
     # Define strategy (FedAvg is the default, but explicit is better)
     # TODO: Switch to SecAgg when clients are ready

@@ -1,4 +1,4 @@
-# VAULTED Threat Model & Mitigation Playbook
+# AEGIS Threat Model & Mitigation Playbook
 
 ## 1. Asset Identification
 *   **User Data**: Raw training data on edge devices. (Highest Sensitivity)
@@ -37,7 +37,7 @@
 
 ### Key Compromise
 1.  **Revoke**: If a client key is stolen, revoke client access at Gateway.
-2.  **Rotate**: Trigger `VaultSecurity.rotate_master_key()` on affected device.
+2.  **Rotate**: Trigger `AegisSecurity.rotate_master_key()` on affected device.
 3.  **Re-encrypt**: Re-process local data with new key.
 
 ### Data Leak

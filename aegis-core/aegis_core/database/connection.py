@@ -5,7 +5,7 @@ from pathlib import Path
 from .models import Base
 
 # Default to a local SQLite database in the current directory
-DATABASE_URL = "sqlite+aiosqlite:///./vault.db"
+DATABASE_URL = "sqlite+aiosqlite:///./aegis.db"
 
 engine = create_async_engine(
     DATABASE_URL, 

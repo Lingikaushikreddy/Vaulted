@@ -1,4 +1,4 @@
-# VAULTED - Security Specification
+# AEGIS - Security Specification
 
 **Role**: Senior Security Architect
 **Date**: 2025-12-27
@@ -8,7 +8,7 @@
 
 ## 1. Cryptographic Standards
 
-### 1.1 Data at Rest (The Vault)
+### 1.1 Data at Rest (The Aegis)
 *   **Algorithm**: AES-256-GCM (Galois/Counter Mode).
 *   **Justification**: Provides both confidentiality and integrity (AEAD). CBC mode is rejected due to lack of built-in integrity and padding oracle risks.
 *   **Implementation**: `cryptography.fernet` (Note: Fernet uses AES-128-CBC with HMAC-SHA256 by default. To meet "AES-256" strict enterprise requirements, we may need to migrate to `ChaCha20-Poly1305` or a custom AES-256-GCM wrapper if Fernet is insufficient. *Current Audited State: Fernet is secure, but we label it AES-128*).

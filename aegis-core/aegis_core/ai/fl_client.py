@@ -5,7 +5,7 @@ import torch.optim as optim
 from collections import OrderedDict
 from .trainer import SimpleNet, load_data
 
-class VaultClient(fl.client.NumPyClient):
+class AegisClient(fl.client.NumPyClient):
     def __init__(self):
         self.model = SimpleNet()
         self.train_loader = load_data() # Simulating local data access
@@ -66,10 +66,10 @@ class VaultClient(fl.client.NumPyClient):
         return float(loss), len(self.train_loader.dataset), {"accuracy": float(accuracy)}
 
 def start_client():
-    print("Starting Vault FL Client...")
+    print("Starting Aegis FL Client...")
     fl.client.start_client(
         server_address="127.0.0.1:8080", 
-        client=VaultClient().to_client()
+        client=AegisClient().to_client()
     )
 
 if __name__ == "__main__":

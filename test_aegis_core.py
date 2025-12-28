@@ -1,13 +1,13 @@
 import asyncio
 import os
 from pathlib import Path
-from vaulted_core.database.connection import init_db, get_db
-from vaulted_core.database.models import StoredDocument
-from vaulted_core.crypto.security import VaultSecurity
+from aegis_core.database.connection import init_db, get_db
+from aegis_core.database.models import StoredDocument
+from aegis_core.crypto.security import AegisSecurity
 from sqlalchemy import select
 
-async def test_vault_flow():
-    print("--- Starting Vault Core Test ---")
+async def test_aegis_flow():
+    print("--- Starting Aegis Core Test ---")
     
     # 1. Setup paths
     base_path = Path("test_data")
@@ -17,8 +17,8 @@ async def test_vault_flow():
     base_path.mkdir(exist_ok=True)
     
     # Cleanup DB if exists
-    if os.path.exists("vault.db"):
-        os.remove("vault.db")
+    if os.path.exists("aegis.db"):
+        os.remove("aegis.db")
     
     input_file = base_path / "secret.txt"
     input_file.write_text("This is my highly sensitive medical record.")
@@ -30,7 +30,7 @@ async def test_vault_flow():
     print("Initializing Database...")
     await init_db()
     
-    security = VaultSecurity(key_path="test_vault.key")
+    security = AegisSecurity(key_path="test_aegis.key")
     print(f"Encryption Key Generated at: {security.key_path}")
 
     # 3. Simulate "Ingestion"
@@ -73,10 +73,10 @@ async def test_vault_flow():
         print(f"Decrypted: {decrypted_content}")
 
     # Cleanup
-    # os.remove("vault.db")
-    # os.remove("test_vault.key")
+    # os.remove("aegis.db")
+    # os.remove("test_aegis.key")
     # import shutil
     # shutil.rmtree("test_data")
 
 if __name__ == "__main__":
-    asyncio.run(test_vault_flow())
+    asyncio.run(test_aegis_flow())

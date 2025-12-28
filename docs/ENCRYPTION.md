@@ -1,7 +1,7 @@
-# VAULTED Encryption Specification
+# AEGIS Encryption Specification
 
 ## Overview
-This document outlines the cryptographic standards and implementations used within the VAULTED ecosystem to ensure Confidentiality, Integrity, and Key Safety.
+This document outlines the cryptographic standards and implementations used within the AEGIS ecosystem to ensure Confidentiality, Integrity, and Key Safety.
 
 ## 1. Encryption-at-Rest (Local Data)
 All sensitive data stored locally on client devices (e.g., training data, model checkpoints) is encrypted using **AES-256-GCM**.
@@ -14,8 +14,8 @@ All sensitive data stored locally on client devices (e.g., training data, model 
 
 ### Key Management
 *   **Storage**:
-    1.  **Primary**: OS System Keyring (via `keyring` library). Service: `vaulted_core`, Username: `vault_master_key_v2`.
-    2.  **Fallback**: Local file `vault_key.key` (Base64 encoded).
+    1.  **Primary**: OS System Keyring (via `keyring` library). Service: `aegis_core`, Username: `aegis_master_key_v2`.
+    2.  **Fallback**: Local file `aegis_key.key` (Base64 encoded).
 *   **Permissions**: Fallback file is restricted to `0600` (Read/Write owner only).
 *   **Rotation**: Keys can be rotated. *Note: Historic data re-encryption is currently manual.*
 
@@ -27,7 +27,7 @@ All network communication between the Gateway, Server, and Clients is secured us
 *   **Authentication**: Mutual TLS (mTLS) is recommended for production; currently token-based/TLS-terminated.
 
 ## 3. Secure Aggregation
-To prevent the central server from inspecting individual model updates, VAULTED utilizes **Secure Aggregation**.
+To prevent the central server from inspecting individual model updates, AEGIS utilizes **Secure Aggregation**.
 
 *   **Protocol**: Flower's implementation of Secure Aggregation (based on Bonawitz et al.).
 *   **Guarantee**: The server can only see the sum of the model updates, not individual contributions.

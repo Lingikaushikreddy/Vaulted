@@ -1,4 +1,4 @@
-# VAULTED
+# AEGIS
 
 > **Personal Data Trust Infrastructure for the AI Era.**
 
@@ -6,7 +6,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-**VAULTED** is a privacy-first infrastructure that enables **Federated Learning (FL)** on personal data without that data ever leaving the user's device. We implement a **"Compute-to-Data"** paradigm where model training occurs locally within a secure "Vault," and only encrypted model updates are shared.
+**AEGIS** is a privacy-first infrastructure that enables **Federated Learning (FL)** on personal data without that data ever leaving the user's device. We implement a **"Compute-to-Data"** paradigm where model training occurs locally within a secure "Aegis," and only encrypted model updates are shared.
 
 ## 🏗 System Architecture
 
@@ -14,7 +14,7 @@ The system is composed of three main layers. For a deep dive, see the [Architect
 
 ```mermaid
 graph TD
-    subgraph "Trust Zone: User Device (The Vault)"
+    subgraph "Trust Zone: User Device (The Aegis)"
         A[Raw Data Store] -->|Read w/ Local Key| B(Local Trainer)
         K[Key Manager] -.->|Injects Keys| B
         B -->|Gradients/Weights| C{Privacy Barrier}
@@ -35,18 +35,18 @@ graph TD
     style D fill:#fbb,stroke:#f33,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
-1.  **Vault Core (`vaulted-core`)**: 
+1.  **Aegis Core (`aegis-core`)**: 
     - A secure, local daemon running on the user's device.
     - Manages **AES-256** encrypted file storage.
     - Executes local PyTorch training loops.
-    - **Zero Trust**: Keys are managed via OS Keychain; raw data never exits the vault.
+    - **Zero Trust**: Keys are managed via OS Keychain; raw data never exits the aegis.
 
-2.  **FL Orchestrator (`vaulted-server`)**:
+2.  **FL Orchestrator (`aegis-server`)**:
     - A centralized server using **Flower (flwr)** to manage federation rounds.
-    - Aggregates model updates (weights) from thousands of vaults.
+    - Aggregates model updates (weights) from thousands of aegiss.
     - Cannot inspect individual data samples.
 
-3.  **Enterprise Gateway (`vaulted-gateway`)**:
+3.  **Enterprise Gateway (`aegis-gateway`)**:
     - A compliant API surface for enterprises to request model training.
     - Manages consent, billing, and audit logs.
 
@@ -60,28 +60,28 @@ graph TD
 
 ```bash
 # Clone the repository
-git clone https://github.com/Lingikaushikreddy/Vaulted.git
-cd Vaulted
+git clone https://github.com/Lingikaushikreddy/Aegis.git
+cd Aegis
 
 # Install dependencies
 pip install -r requirements.txt
 ```
 
-### Running the Vault (Client)
+### Running the Aegis (Client)
 
 ```bash
 # Set PYTHONPATH
-export PYTHONPATH=$PYTHONPATH:$(pwd)/vaulted-core
+export PYTHONPATH=$PYTHONPATH:$(pwd)/aegis-core
 
 # Run the integration test (simulates a full flow)
-python test_vault_core.py
+python test_aegis_core.py
 ```
 
 ### Running the FL Server
 
 ```bash
-export PYTHONPATH=$PYTHONPATH:$(pwd)/vaulted-server
-python -m vaulted_server.server
+export PYTHONPATH=$PYTHONPATH:$(pwd)/aegis-server
+python -m aegis_server.server
 ```
 
 ## 🔐 Security & Compliance

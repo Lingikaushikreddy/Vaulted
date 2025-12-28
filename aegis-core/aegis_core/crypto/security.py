@@ -6,11 +6,11 @@ from pathlib import Path
 from typing import Optional
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-SERVICE_NAME = "vaulted_core"
-USERNAME = "vault_master_key_v2"
+SERVICE_NAME = "aegis_core"
+USERNAME = "aegis_master_key_v2"
 
-class VaultSecurity:
-    def __init__(self, key_path: str = "vault_key.key", use_keyring: bool = True):
+class AegisSecurity:
+    def __init__(self, key_path: str = "aegis_key.key", use_keyring: bool = True):
         self.key_path = Path(key_path)
         self.use_keyring = use_keyring
         self.key = self._load_or_generate_key()

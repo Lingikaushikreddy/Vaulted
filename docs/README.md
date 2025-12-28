@@ -1,4 +1,4 @@
-# VAULTED Documentation
+# AEGIS Documentation
 
 - [Architecture Design](architecture.md) - System overview and trust boundaries.
 - [Security Specification](security_spec.md) - Encryption, KMS, and Threat Models.

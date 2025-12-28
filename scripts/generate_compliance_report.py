@@ -2,13 +2,13 @@ import asyncio
 import json
 import os
 from sqlalchemy import select
-from vaulted_core.database.connection import get_db, init_db
-from vaulted_core.database.models import ConsentPolicy, AuditLog
+from aegis_core.database.connection import get_db, init_db
+from aegis_core.database.models import ConsentPolicy, AuditLog
 
 async def generate_report():
     print("Generating Compliance Dashboard...")
-    if not os.path.exists("vault.db"):
-        print("Error: vault.db not found. Run tests or ingest data first.")
+    if not os.path.exists("aegis.db"):
+        print("Error: aegis.db not found. Run tests or ingest data first.")
         return
 
     async with get_db() as db:

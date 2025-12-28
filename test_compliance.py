@@ -1,20 +1,20 @@
 import asyncio
 import os
 from pathlib import Path
-from vaulted_core.database.connection import init_db, get_db
+from aegis_core.database.connection import init_db, get_db
 import json
-from vaulted_core.database.models import ConsentPolicy, AuditLog
-from vaulted_core.compliance.engine import ComplianceEngine
+from aegis_core.database.models import ConsentPolicy, AuditLog
+from aegis_core.compliance.engine import ComplianceEngine
 from sqlalchemy import select
 
 async def test_compliance():
     print("--- Starting Compliance Integration Test ---")
     
     # Cleanup DB to force schema update
-    if os.path.exists("vaulted-core/vault.db"):
-        os.remove("vaulted-core/vault.db")
-    if os.path.exists("vault.db"):
-        os.remove("vault.db")
+    if os.path.exists("aegis-core/aegis.db"):
+        os.remove("aegis-core/aegis.db")
+    if os.path.exists("aegis.db"):
+        os.remove("aegis.db")
         
     # 1. Init DB
     await init_db()

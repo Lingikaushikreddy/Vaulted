@@ -2,10 +2,10 @@ import os
 import unittest
 import shutil
 from pathlib import Path
-from vaulted_core.crypto.security import VaultSecurity
+from aegis_core.crypto.security import AegisSecurity
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-class TestVaultSecurity(unittest.TestCase):
+class TestAegisSecurity(unittest.TestCase):
     def setUp(self):
         self.test_dir = Path("test_crypto_tmp")
         self.test_dir.mkdir(exist_ok=True)
@@ -21,17 +21,17 @@ class TestVaultSecurity(unittest.TestCase):
     def test_key_generation_and_storage(self):
         # Initialize security (should generate key)
         # Force no keyring to test file fallback
-        sec = VaultSecurity(key_path=str(self.key_path), use_keyring=False)
+        sec = AegisSecurity(key_path=str(self.key_path), use_keyring=False)
 
         self.assertTrue(self.key_path.exists())
         self.assertEqual(len(sec.key), 32) # AES-256
 
         # Re-initialize (should load key)
-        sec2 = VaultSecurity(key_path=str(self.key_path), use_keyring=False)
+        sec2 = AegisSecurity(key_path=str(self.key_path), use_keyring=False)
         self.assertEqual(sec.key, sec2.key)
 
     def test_encryption_decryption(self):
-        sec = VaultSecurity(key_path=str(self.key_path), use_keyring=False)
+        sec = AegisSecurity(key_path=str(self.key_path), use_keyring=False)
         data = b"Hello, World! This is a secret."
 
         encrypted = sec.encrypt_data(data)
@@ -43,7 +43,7 @@ class TestVaultSecurity(unittest.TestCase):
         self.assertEqual(data, decrypted)
 
     def test_file_encryption(self):
-        sec = VaultSecurity(key_path=str(self.key_path), use_keyring=False)
+        sec = AegisSecurity(key_path=str(self.key_path), use_keyring=False)
         input_file = self.test_dir / "input.txt"
         enc_file = self.test_dir / "enc.bin"
         output_file = self.test_dir / "output.txt"
@@ -59,7 +59,7 @@ class TestVaultSecurity(unittest.TestCase):
         self.assertEqual(output_file.read_bytes(), data)
 
     def test_tampered_data(self):
-        sec = VaultSecurity(key_path=str(self.key_path), use_keyring=False)
+        sec = AegisSecurity(key_path=str(self.key_path), use_keyring=False)
         data = b"Vital Data"
         encrypted = bytearray(sec.encrypt_data(data))
 
