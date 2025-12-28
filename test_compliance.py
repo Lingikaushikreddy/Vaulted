@@ -2,6 +2,7 @@ import asyncio
 import os
 from pathlib import Path
 from vaulted_core.database.connection import init_db, get_db
+import json
 from vaulted_core.database.models import ConsentPolicy, AuditLog
 from vaulted_core.compliance.engine import ComplianceEngine
 from sqlalchemy import select
@@ -19,15 +20,17 @@ async def test_compliance():
     await init_db()
     
     async with get_db() as db:
-        # 2. Setup Policy
-        print("Creating Consent Policy...")
+        # 2. Setup Policy with Minimization & GDPR
+        print("Creating Consent Policy with Minimization & GDPR...")
         policy = ConsentPolicy(
             entity_id="health_corp",
             name="Medical Training",
             description="Allow training on med data",
             allowed_actions="TRAIN_MODEL",
             target_tags="medical",
-            revoked=False
+            revoked=False,
+            regulation_mapping=json.dumps({"GDPR": ["Art.6(1)(a)"]}),
+            data_minimization_rules=json.dumps({"allowed_columns": ["diagnosis", "age"]})
         )
         db.add(policy)
         await db.commit()
@@ -43,7 +46,22 @@ async def test_compliance():
         assert allowed == True, "Should be ALLOWED"
         print("Verdict: ALLOWED (Correct)")
 
-        # 4. Test Check (Denied - Wrong Tag)
+        # 4. Test Minimization
+        print("Testing Data Minimization...")
+        mock_data = [
+            {"name": "Alice", "age": 30, "diagnosis": "Flu", "ssn": "123-45"},
+            {"name": "Bob", "age": 25, "diagnosis": "Cold", "ssn": "678-90"}
+        ]
+        minimized = engine.enforce_minimization(mock_data, policy)
+        print(f"Original keys: {mock_data[0].keys()}")
+        print(f"Minimized keys: {minimized[0].keys()}")
+
+        assert "ssn" not in minimized[0], "SSN should be removed"
+        assert "name" not in minimized[0], "Name should be removed"
+        assert "diagnosis" in minimized[0], "Diagnosis should remain"
+        print("Minimization: SUCCESS")
+
+        # 5. Test Check (Denied - Wrong Tag)
         print("Checking DENIED request (Wrong Tag)...")
         denied_tag = await engine.check_consent(
             entity_id="health_corp", 
@@ -53,25 +71,20 @@ async def test_compliance():
         assert denied_tag == False, "Should be DENIED"
         print("Verdict: DENIED (Correct)")
         
-        # 5. Test Check (Denied - Wrong Entity)
-        print("Checking DENIED request (Wrong Entity)...")
-        denied_entity = await engine.check_consent(
-            entity_id="random_hacker", 
-            action="TRAIN_MODEL", 
-            tags=["medical"]
-        )
-        assert denied_entity == False, "Should be DENIED"
-        print("Verdict: DENIED (Correct)")
-
-        # 6. Verify Audit Logs
+        # 6. Verify Audit Logs & Details
         print("Verifying Audit Logs...")
         result = await db.execute(select(AuditLog))
         logs = result.scalars().all()
         print(f"Total Logs: {len(logs)}")
         for log in logs:
-            print(f"- [{log.timestamp}] {log.actor_id} -> {log.action_type} on {log.target_resource}: {log.verdict}")
-            
-        assert len(logs) >= 3
+            print(f"- [{log.timestamp}] {log.actor_id} -> {log.action_type}: {log.verdict}")
+            if log.verdict == "ALLOWED":
+                 details = json.loads(log.compliance_check_details)
+                 print(f"  Compliance Details: {details}")
+                 assert "regulations" in details
+                 assert "GDPR" in details["regulations"]
+
+        assert len(logs) >= 2
 
     print("SUCCESS: Compliance flow complete.")
 

@@ -33,6 +33,10 @@ class AuditLog(Base):
     # Extra details (JSON)
     details = Column(Text, default="{}")
 
+    # Structured compliance check results (JSON)
+    # e.g. {"checks": [{"rule": "GDPR_CONSENT", "passed": true}]}
+    compliance_check_details = Column(Text, default="{}")
+
 class ConsentPolicy(Base):
     """Defines rules for data usage."""
     __tablename__ = "consent_policies"
@@ -45,3 +49,9 @@ class ConsentPolicy(Base):
     target_tags = Column(String)    # e.g., "health, finance"
     expiry = Column(DateTime, nullable=True)
     revoked = Column(Boolean, default=False)
+
+    # Compliance & Minimization
+    # JSON map: {"GDPR": ["Art.6(1)(a)"], "HIPAA": ["§164.502"]}
+    regulation_mapping = Column(Text, default="{}")
+    # JSON rules: {"allowed_columns": ["age", "diagnosis"], "row_filter": "age > 18"}
+    data_minimization_rules = Column(Text, default="{}")
