@@ -84,11 +84,15 @@ export PYTHONPATH=$PYTHONPATH:$(pwd)/vaulted-server
 python -m vaulted_server.server
 ```
 
-## 🔐 Security Features
+## 🔐 Security & Compliance
 
-- **Encryption at Rest**: Fernet (Symmetric AES-256).
-- **Secure Key Management**: Integrated with OS Keyring (macOS Keychain, Windows Credential Locker).
-- **Audit Logging**: All access requests are strictly logged in a local SQLite ledger.
+- **Encryption at Rest**: AES-256-GCM.
+- **Secure Key Management**: Integrated with OS Keyring.
+- **Compliance Engine**: 
+    - Automated GDPR/CCPA checks.
+    - Data Minimization enforcement.
+    - PDF Report generation.
+- **Audit Logging**: Immutable SQLite ledger.
 
 ## 🤝 Contributing
 
