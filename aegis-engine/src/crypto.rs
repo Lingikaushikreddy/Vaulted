@@ -2,7 +2,6 @@ use aes_gcm::{
     aead::{Aead, AeadCore, KeyInit, OsRng},
     Aes256Gcm, Key, Nonce
 };
-use rand::RngCore;
 use thiserror::Error;
 
 #[derive(Error, Debug)]

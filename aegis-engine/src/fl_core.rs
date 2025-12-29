@@ -16,6 +16,7 @@ pub struct ModelWeights {
 }
 
 pub struct FlClientCore {
+    #[allow(dead_code)]
     local_data_path: String,
 }
 

@@ -23,7 +23,7 @@ impl SecureChannel {
     }
 
     /// Send weights securely (simulated)
-    pub fn upload(&self, round: u32, weights: &ModelWeights) -> Result<(), NetworkError> {
+    pub fn upload(&self, round: u32, _weights: &ModelWeights) -> Result<(), NetworkError> {
         println!("Sending round {} weights to {}...", round, self.endpoint);
         // Implement gRPC client here
         Ok(())
