@@ -171,10 +171,50 @@ impl Vault {
         Ok(header)
     }
 
+    /// Restore to a file on disk
+    pub fn restore_file(&self, encrypted_filename: &str, dest_dir: &Path) -> Result<PathBuf, SdkError> {
+        let src = self.root_path.join(encrypted_filename);
+        let mut input = BufReader::new(File::open(src)?);
+
+        // 1. Read Header
+        let mut len_buf = [0u8; 4];
+        input.read_exact(&mut len_buf)?;
+        let header_len = u32::from_le_bytes(len_buf) as usize;
+        let mut header_buf = vec![0u8; header_len];
+        input.read_exact(&mut header_buf)?;
+        let header_bytes = self.crypto.decrypt(&header_buf)?;
+        let header: VaultHeader = serde_json::from_slice(&header_bytes)?;
+
+        // 2. Sanitize Filename (Security Critical)
+        // Ensure we only use the file name component, stripping directory traversal attempts
+        let safe_filename = Path::new(&header.original_filename)
+            .file_name()
+            .ok_or(SdkError::InvalidState)?
+            .to_string_lossy();
+
+        let dest_path = dest_dir.join(safe_filename.as_ref());
+        let mut output = BufWriter::new(File::create(&dest_path)?);
+
+        // 3. Process Chunks with Cleanup on Failure
+        if let Err(e) = self.process_stream(&mut input, &mut output, header.total_size) {
+            // Attempt to remove the partial file
+            let _ = fs::remove_file(&dest_path);
+            return Err(e);
+        }
+
+        Ok(dest_path)
+    }
+
     /// Load file contents to memory directly
     pub fn load_file_to_memory(&self, encrypted_filename: &str) -> Result<Vec<u8>, SdkError> {
         let mut buffer = Vec::new();
         self.restore_stream(encrypted_filename, &mut buffer)?;
         Ok(buffer)
+    }
+
+    /// Destroy the vault
+    pub fn nuke(&self) -> Result<(), SdkError> {
+        fs::remove_dir_all(&self.root_path)?;
+        Ok(())
     }
 }
