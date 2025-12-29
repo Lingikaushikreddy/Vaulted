@@ -148,4 +148,33 @@ impl Vault {
         output.flush()?;
         Ok(())
     }
+
+    /// Generic restore function taking any Writer.
+    /// Returns the VaultHeader so the caller knows what was restored.
+    pub fn restore_stream<W: Write>(&self, encrypted_filename: &str, mut output: W) -> Result<VaultHeader, SdkError> {
+        let src = self.root_path.join(encrypted_filename);
+        let mut input = BufReader::new(File::open(src)?);
+
+        // 1. Read Header
+        let mut len_buf = [0u8; 4];
+        input.read_exact(&mut len_buf)?;
+        let header_len = u32::from_le_bytes(len_buf) as usize;
+
+        let mut header_buf = vec![0u8; header_len];
+        input.read_exact(&mut header_buf)?;
+        let header_bytes = self.crypto.decrypt(&header_buf)?;
+        let header: VaultHeader = serde_json::from_slice(&header_bytes)?;
+
+        // 2. Process Chunks
+        self.process_stream(&mut input, &mut output, header.total_size)?;
+        
+        Ok(header)
+    }
+
+    /// Load file contents to memory directly
+    pub fn load_file_to_memory(&self, encrypted_filename: &str) -> Result<Vec<u8>, SdkError> {
+        let mut buffer = Vec::new();
+        self.restore_stream(encrypted_filename, &mut buffer)?;
+        Ok(buffer)
+    }
 }
