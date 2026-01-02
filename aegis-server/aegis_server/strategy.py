@@ -14,6 +14,7 @@ from flwr.common import (
 )
 from flwr.server.client_proxy import ClientProxy
 from flwr.server.strategy import FedAvg
+import numpy as np
 import logging
 
 # Initialize logger
