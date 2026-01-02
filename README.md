@@ -130,6 +130,19 @@ privatized_result = core.privatize_update(rust_weights)
 print(f"Update Secured. Privacy Budget Consumed.")
 ```
 
+### Usage Example: Distributed Coordinator
+
+The Aegis Server acts as a fault-tolerant coordinator. It automatically creates `checkpoints/` and `logs/`.
+
+```bash
+# Start the server (Requires TLS certs or edit to run insecure)
+python3 -m aegis_server.server
+
+# To verify Recovery:
+# 1. Stop the server (Ctrl+C)
+# 2. Restart it. It will find the latest checkpoint and resume.
+```
+
 ---
 
 ## 🗺️ Roadmap
