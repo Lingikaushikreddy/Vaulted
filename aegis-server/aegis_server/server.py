@@ -5,6 +5,7 @@ from .strategy import AegisPrivacyStrategy
 import logging
 import os
 from datetime import datetime
+from prometheus_client import start_http_server
 
 def setup_logging():
     """Configure structured logging for the server."""
@@ -25,6 +26,14 @@ def setup_logging():
 def start_fl_server():
     logger = setup_logging()
     logger.info("Starting Aegis FL Server (Distributed Coordinator)...")
+    
+    # Start Prometheus Metrics Server
+    # Exposes http://localhost:9090/metrics for scraping
+    try:
+        start_http_server(9090)
+        logger.info("Prometheus metrics provided on port 9090")
+    except Exception as e:
+        logger.warning(f"Failed to start Prometheus server: {e}")
 
     # Ensure checkpoints directory exists
     checkpoint_dir = Path("checkpoints")

@@ -15,9 +15,17 @@ from flwr.common import (
 from flwr.server.client_proxy import ClientProxy
 from flwr.server.strategy import FedAvg
 import logging
+from prometheus_client import Summary, Gauge, Counter
+import time
 
 # Initialize logger
 logger = logging.getLogger(__name__)
+
+# Prometheus Metrics
+ROUND_DURATION = Summary('fl_round_duration_seconds', 'Time spent executing a single FL round')
+CONNECTED_CLIENTS = Gauge('fl_connected_clients', 'Number of clients currently participating')
+PRIVACY_BUDGET_CONSUMED = Counter('fl_privacy_budget_consumed', 'Total privacy budget (epsilon) estimated consumed')
+MODEL_CHECKPOINTS_SAVED = Counter('fl_model_checkpoints_saved', 'Total number of checkpoints successfully saved')
 
 class AegisPrivacyStrategy(FedAvg):
     def __init__(
@@ -33,6 +41,10 @@ class AegisPrivacyStrategy(FedAvg):
         self, server_round: int, parameters: Parameters, client_manager: fl.server.client_manager.ClientManager
     ) -> List[Tuple[ClientProxy, FitIns]]:
         """Configure the next round of training."""
+        
+        # Metric: Track number of clients selected
+        num_clients = client_manager.num_available()
+        CONNECTED_CLIENTS.set(num_clients)
 
         # Standard configuration from FedAvg
         client_instructions = super().configure_fit(server_round, parameters, client_manager)
@@ -44,6 +56,7 @@ class AegisPrivacyStrategy(FedAvg):
 
         return client_instructions
 
+    @ROUND_DURATION.time()
     def aggregate_fit(
         self,
         server_round: int,
@@ -95,6 +108,7 @@ class AegisPrivacyStrategy(FedAvg):
                 checkpoint_path = f"checkpoints/model_round_{server_round}.npz"
                 np.savez_compressed(checkpoint_path, *ndarrays)
                 logger.info(f"Checkpoint saved: {checkpoint_path}")
+                MODEL_CHECKPOINTS_SAVED.inc()
             except Exception as e:
                 logger.error(f"Failed to save checkpoint: {e}")
 
