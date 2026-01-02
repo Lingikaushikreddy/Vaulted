@@ -55,20 +55,20 @@ Aegis uses a "Sandwiched" architecture where the secure Rust core wraps the sens
 ```mermaid
 graph TD
     subgraph "Server Infrastructure"
-        Server[Aggregation Server (Flower)]
-        Policy[Privacy Strategy]
+        Server["Aggregation Server (Flower)"]
+        Policy["Privacy Strategy"]
     end
 
     subgraph "Client Device (iOS / Android / Desktop)"
-        App[Application Logic]
+        App["Application Logic"]
         
         subgraph "Aegis Core (Rust Enclave)"
-            Vault[Secure Vault]
-            DP[DP Engine (Gaussian Mechanism)]
-            Crypto[AES-256-GCM]
+            Vault["Secure Vault"]
+            DP["DP Engine (Gaussian Mechanism)"]
+            Crypto["AES-256-GCM"]
         end
         
-        App -->|Train| Model[Local Model]
+        App -->|Train| Model["Local Model"]
         Model -->|Gradients| DP
         DP -->|Privatized Update| App
     end
