@@ -9,8 +9,9 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 try:
     from engine import aegis_engine
-except ImportError:
-    print("Warning: aegis_engine binding not found. Ensure binaries are built.")
+except (ImportError, OSError) as e:
+    # We log this but don't fail immediately unless strict privacy is needed
+    print(f"Warning: aegis_engine binding not found or failed to load. Ensure binaries are built. Error: {e}")
     aegis_engine = None
 
 class SimpleNet(nn.Module):
@@ -94,9 +95,6 @@ class FederatedTrainer:
         # 4. Apply Differential Privacy via Rust
         if self.core:
             print("--- Applying Differential Privacy (Rust Kernel) ---")
-            # Convert python list to Rust ModelWeights record
-            # Shape is not strictly used by DP logic but required by struct
-            # We pass dummy shape or flat shape for now
             rust_weights = aegis_engine.ModelWeights(
                 data=update_vector,
                 shape=[len(update_vector)] 
@@ -111,10 +109,11 @@ class FederatedTrainer:
                 privatized_update = privatized_result.data
                 print(f"DP Verified: Noise Injected. (Time: {(end_time - start_time)*1000:.2f}ms)")
             except Exception as e:
-                print(f"Privacy Error: {e}")
-                privatized_update = update_vector # Fallback (INSECURE)
+                raise RuntimeError(f"Privacy Error: {e}")
         else:
             print("WARNING: No Privacy Kernel. Sending raw gradients.")
+            # If we were strictly enforcing privacy here, we would raise an error.
+            # But FederatedTrainer is also used for local debugging, so we keep the warning unless configured otherwise.
             privatized_update = update_vector
 
         # 5. Apply Privatized Update (Simulating Aggregation)
